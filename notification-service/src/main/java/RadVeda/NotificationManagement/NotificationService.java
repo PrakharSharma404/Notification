@@ -60,6 +60,8 @@ public class NotificationService implements NotificationServiceInterface {
     @Value("${external-services.consent.url}")
     private String consentUrl;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     // ------------------------------------------------------------------------------------------------
     // GENERIC HELPERS
     // ------------------------------------------------------------------------------------------------
@@ -291,7 +293,6 @@ public class NotificationService implements NotificationServiceInterface {
 
             String payload = new String(Base64.getUrlDecoder().decode(chunks[1]));
 
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode payloadNode = objectMapper.readTree(payload);
 
             if (!payloadNode.has("role")) {
