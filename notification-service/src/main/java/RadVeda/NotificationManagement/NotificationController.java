@@ -2,9 +2,6 @@ package RadVeda.NotificationManagement;
 
 import RadVeda.NotificationManagement.Notifications.*;
 import RadVeda.NotificationManagement.config.CurrentUser;
-import RadVeda.NotificationManagement.exception.InvalidChatException;
-import RadVeda.NotificationManagement.exception.InvalidConsentRequestException;
-import RadVeda.NotificationManagement.exception.RecipientNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -59,53 +56,7 @@ public class NotificationController {
 
     // --- POST Endpoints (Sending Notifications) ---
 
-    @PostMapping("/sendChatNotification")
-    public String sendChatNotification(
-            @RequestBody ChatNotificationRequest request,
-            @CurrentUser User currentUser) {
-
-        if (!notificationService.isRecipientValid(request.recipientType(), request.recipientId(),
-                currentUser)) {
-            throw new RecipientNotFoundException("Invalid notification recipient!");
-        }
-        if (!notificationService.isChatValid(request.chatType(), request.chatId(), currentUser)) {
-            throw new InvalidChatException("Invalid chat!");
-        }
-        notificationService.sendChatNotificationToRecipient(request.message(), request.recipientType(),
-                request.recipientId(), request.chatType(), request.chatId());
-        return "Notification sent successfully!!";
-    }
-
-    @PostMapping("/sendConsentRequestNotification")
-    public String sendConsentRequestNotification(
-            @RequestBody ConsentRequestNotificationRequest request,
-            @CurrentUser User currentUser) {
-
-        if (!notificationService.isRecipientValid(request.recipientType(), request.recipientId(),
-                currentUser)) {
-            throw new RecipientNotFoundException("Invalid notification recipient!");
-        }
-        if (!notificationService.isConsentRequestValid(request.consentRequestId(), currentUser)) {
-            throw new InvalidConsentRequestException("Invalid consent request!");
-        }
-        notificationService.sendConsentRequestNotificationToRecipient(request.message(), request.recipientType(),
-                request.recipientId(), request.consentRequestId());
-        return "Notification sent successfully!!";
-    }
-
-    @PostMapping("/sendOneWayNotification")
-    public String sendOneWayNotification(
-            @RequestBody OneWayNotificationRequest request,
-            @CurrentUser User currentUser) {
-
-        if (!notificationService.isRecipientValid(request.recipientType(), request.recipientId(),
-                currentUser)) {
-            throw new RecipientNotFoundException("Invalid notification recipient!");
-        }
-        notificationService.sendOneWayNotificationToRecipient(request.message(), request.recipientType(),
-                request.recipientId());
-        return "Notification sent successfully!!";
-    }
+    // --- POST Endpoints (Removed: Now handled via RabbitMQ Events) ---
 
     // --- DELETE Endpoints ---
 
