@@ -18,7 +18,7 @@ import java.util.List;
  * WHY WE NEED IT:
  * This is the "Doorway" to our service. It exposes the functionality (send,
  * get, delete notifications)
- * via HTTP endpoints (GET, POST, DELETE) so that the Frontend (React/Next.js)
+ * via HTTP endpoints (GET, POST, DELETE) so that the Frontned (React/Next.js)
  * or other Microservices
  * can interact with us.
  * 
@@ -120,33 +120,6 @@ public class NotificationController {
     public String deleteAllChatNotifications(
             @CurrentUser User currentUser) {
         return notificationService.deleteAllChatNotificationsOfRecipient(currentUser.getType(), currentUser.getId());
-    }
-
-    @DeleteMapping("/deleteConsentRequestNotification/{id}")
-    public String deleteConsentRequestNotification(
-            @PathVariable Long id,
-            @CurrentUser User currentUser) {
-        return notificationService.deleteConsentRequestNotificationOfRecipient(id, currentUser);
-    }
-
-    @DeleteMapping("/deleteAllConsentRequestNotifications")
-    public String deleteAllConsentRequestNotifications(
-            @CurrentUser User currentUser) {
-        return notificationService.deleteAllConsentRequestNotificationsOfRecipient(currentUser.getType(),
-                currentUser.getId());
-    }
-
-    @DeleteMapping("/deleteOneWayNotification/{id}")
-    public String deleteOneWayNotification(
-            @PathVariable Long id,
-            @CurrentUser User currentUser) {
-        return notificationService.deleteOneWayNotificationOfRecipient(id, currentUser);
-    }
-
-    @DeleteMapping("/deleteAllOneWayNotifications")
-    public String deleteAllOneWayNotifications(
-            @CurrentUser User currentUser) {
-        return notificationService.deleteAllOneWayNotificationsOfRecipient(currentUser.getType(), currentUser.getId());
     }
 
     // (Note: You can add the remaining delete endpoints for Consent and OneWay
