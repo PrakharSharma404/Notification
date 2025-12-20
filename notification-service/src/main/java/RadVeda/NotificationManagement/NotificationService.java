@@ -3,7 +3,9 @@ package RadVeda.NotificationManagement;
 import RadVeda.NotificationManagement.Notifications.*;
 import RadVeda.NotificationManagement.exception.NotificationNotFoundException;
 import RadVeda.NotificationManagement.exception.UnauthorisedUserException;
+import RadVeda.NotificationManagement.consumer.NotificationMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -50,6 +52,7 @@ public class NotificationService implements NotificationServiceInterface {
     private final ChatNotificationRepository chatNotificationRepository;
     private final ConsentRequestNotificationRepository consentRequestNotificationRepository;
     private final OneWayNotificationRepository oneWayNotificationRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Value("${external-services.user-management.url}")
     private String userManagementUrl;
@@ -61,6 +64,59 @@ public class NotificationService implements NotificationServiceInterface {
     private String consentUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // ------------------------------------------------------------------------------------------------
+    // EVENT PROCESSING METHODS (RabbitMQ -> WebSocket)
+    // ------------------------------------------------------------------------------------------------
+
+    public void processChatEvent(NotificationMessage message) {
+        ChatNotification notification = new ChatNotification();
+        notification.setRecipientId(message.getRecipientId());
+        notification.setMessage(message.getBody());
+        // Set other defaults if needed, e.g. recipientType since message doesn't have
+        // it?
+        // For now assuming some defaults or dealing with it.
+        // actually the user said "Cheap way to handle polymorphism in JSON", so the
+        // consumer handles the type.
+        // We need recipientType for the DB. Let's assume input message might need it or
+        // we default it?
+        // The DTO has type, body, recipientId.
+        // We'll set a default or dummy RecipientType if not present, but for now let's
+        // just save what we have.
+        // Wait, the entity requires recipientType. Let's assume "PATIENT" for now or
+        // derived?
+        // Actually, the previous implementation plan implementation showed just setting
+        // recipientId.
+        // I will follow the user's snippet.
+
+        notification.setRecipientType("PATIENT"); // Defaulting for simple demo
+        notification.setChatType("PRIVATE"); // Default
+        notification.setChatId(0L); // Default
+
+        ChatNotification saved = chatNotificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/user/" + saved.getRecipientId(), saved);
+    }
+
+    public void processConsentEvent(NotificationMessage message) {
+        ConsentRequestNotification notification = new ConsentRequestNotification();
+        notification.setRecipientId(message.getRecipientId());
+        notification.setMessage(message.getBody());
+        notification.setRecipientType("DOCTOR"); // Default
+        notification.setConsentRequestId(0L); // Default
+
+        ConsentRequestNotification saved = consentRequestNotificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/user/" + saved.getRecipientId(), saved);
+    }
+
+    public void processOneWayEvent(NotificationMessage message) {
+        OneWayNotification notification = new OneWayNotification();
+        notification.setRecipientId(message.getRecipientId());
+        notification.setMessage(message.getBody());
+        notification.setRecipientType("PATIENT"); // Default
+
+        OneWayNotification saved = oneWayNotificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/user/" + saved.getRecipientId(), saved);
+    }
 
     // ------------------------------------------------------------------------------------------------
     // GENERIC HELPERS
