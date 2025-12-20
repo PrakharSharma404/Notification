@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadVeda Notification Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- SockJS and Stomp -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>RadVeda Notifications</h1>
+            <div class="connection-status">
+                <span id="status-dot" class="dot disconnected"></span>
+                <span id="status-text">Disconnected</span>
+            </div>
+        </header>
+
+        <div class="auth-box">
+            <input type="text" id="userId" placeholder="Enter User ID (e.g., 1)" value="1">
+            <button onclick="connect()" class="btn-primary">Connect</button>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="openTab('chat')">Chat</button>
+            <button class="tab-btn" onclick="openTab('consent')">Consent</button>
+            <button class="tab-btn" onclick="openTab('oneway')">One Way</button>
+            <button class="tab-btn error-tab" onclick="openTab('errors')">Simulation & Errors</button>
+        </nav>
+
+        <main>
+            <!-- Chat Tab -->
+            <div id="chat" class="tab-content active">
+                <div class="actions">
+                    <h2>Chat Notifications</h2>
+                    <div class="form-group">
+                        <input type="text" id="chatMsg" placeholder="Message">
+                        <input type="text" id="chatRecId" placeholder="Recipient ID">
+                        <button onclick="sendChat()" class="btn-action">Send</button>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <button onclick="getAllChat()" class="btn-secondary">Refresh List</button>
+                    <button onclick="deleteAllChat()" class="btn-danger">Delete All</button>
+                    <ul id="chatList" class="notification-list"></ul>
+                </div>
+            </div>
+
+            <!-- Consent Tab -->
+            <div id="consent" class="tab-content">
+                <div class="actions">
+                    <h2>Consent Requests</h2>
+                    <div class="form-group">
+                        <input type="text" id="consentMsg" placeholder="Message">
+                        <input type="text" id="consentRecId" placeholder="Recipient ID">
+                        <button onclick="sendConsent()" class="btn-action">Send</button>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <button onclick="getAllConsent()" class="btn-secondary">Refresh List</button>
+                    <button onclick="deleteAllConsent()" class="btn-danger">Delete All</button>
+                    <ul id="consentList" class="notification-list"></ul>
+                </div>
+            </div>
+
+            <!-- One Way Tab -->
+            <div id="oneway" class="tab-content">
+                <div class="actions">
+                    <h2>One Way Alerts</h2>
+                    <div class="form-group">
+                        <input type="text" id="onewayMsg" placeholder="Message">
+                        <input type="text" id="onewayRecId" placeholder="Recipient ID">
+                        <button onclick="sendOneWay()" class="btn-action">Send</button>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <button onclick="getAllOneWay()" class="btn-secondary">Refresh List</button>
+                    <button onclick="deleteAllOneWay()" class="btn-danger">Delete All</button>
+                    <ul id="onewayList" class="notification-list"></ul>
+                </div>
+            </div>
+
+            <!-- Error Simulation Tab -->
+            <div id="errors" class="tab-content">
+                <div class="actions">
+                    <h2>Error Simulation</h2>
+                    <p>Trigger backend exceptions to view error handling.</p>
+                    <div class="button-grid">
+                        <button onclick="triggerInvalidRecipient()" class="btn-warning">Invalid Recipient</button>
+                        <button onclick="triggerInvalidChat()" class="btn-warning">Invalid Chat ID</button>
+                        <button onclick="triggerInvalidConsent()" class="btn-warning">Invalid Consent ID</button>
+                        <button onclick="triggerUnauthorized()" class="btn-warning">Unauthorized Access (Fake)</button>
+                    </div>
+                </div>
+                <div id="errorLog" class="console-log">
+                    <p class="log-title">Error Log:</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">New Notification!</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

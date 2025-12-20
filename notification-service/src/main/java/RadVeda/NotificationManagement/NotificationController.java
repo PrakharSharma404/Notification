@@ -122,6 +122,33 @@ public class NotificationController {
         return notificationService.deleteAllChatNotificationsOfRecipient(currentUser.getType(), currentUser.getId());
     }
 
+    @DeleteMapping("/deleteConsentRequestNotification/{id}")
+    public String deleteConsentRequestNotification(
+            @PathVariable Long id,
+            @CurrentUser User currentUser) {
+        return notificationService.deleteConsentRequestNotificationOfRecipient(id, currentUser);
+    }
+
+    @DeleteMapping("/deleteAllConsentRequestNotifications")
+    public String deleteAllConsentRequestNotifications(
+            @CurrentUser User currentUser) {
+        return notificationService.deleteAllConsentRequestNotificationsOfRecipient(currentUser.getType(),
+                currentUser.getId());
+    }
+
+    @DeleteMapping("/deleteOneWayNotification/{id}")
+    public String deleteOneWayNotification(
+            @PathVariable Long id,
+            @CurrentUser User currentUser) {
+        return notificationService.deleteOneWayNotificationOfRecipient(id, currentUser);
+    }
+
+    @DeleteMapping("/deleteAllOneWayNotifications")
+    public String deleteAllOneWayNotifications(
+            @CurrentUser User currentUser) {
+        return notificationService.deleteAllOneWayNotificationsOfRecipient(currentUser.getType(), currentUser.getId());
+    }
+
     // (Note: You can add the remaining delete endpoints for Consent and OneWay
     // notifications similarly if needed)
 }
